@@ -1,0 +1,17 @@
+{
+  "name": "game-balance-designer-plugin",
+  "version": "1.0.0",
+  "description": "게임 밸런스 설계 에이전트 및 수학 공식 스킬. 경험치/난이도/드롭률/스탯 등 게임 수치 분석과 디자인을 지원합니다.",
+  "author": {
+    "name": "nelta9x",
+    "email": "nelta9x@gmail.com",
+    "url": "https://github.com/nelta9x"
+  },
+  "license": "MIT",
+  "keywords": [
+    "game-design",
+    "game-balance",
+    "game-economy",
+    "drop-tables"
+  ]
+}

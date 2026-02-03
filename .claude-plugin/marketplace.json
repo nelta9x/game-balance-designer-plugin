@@ -1,0 +1,28 @@
+{
+  "name": "game-balance-designer",
+  "owner": {
+    "name": "nelta9x",
+    "email": "nelta9x@gmail.com"
+  },
+  "metadata": {
+    "description": "게임 밸런스 설계 에이전트 및 수학 공식 스킬. 경험치/난이도/드롭률/스탯 등 게임 수치 설계에 필요한 수학적 모델링을 지원합니다."
+  },
+  "plugins": [
+    {
+      "name": "game-balance-designer-plugin",
+      "source": "./",
+      "description": "경험치 테이블, 드롭률, 난이도 곡선, 스탯 수확체감, Pity 시스템 등 게임 밸런스 수치 분석 및 설계를 위한 에이전트와 수학 공식 참고 자료를 제공합니다.",
+      "version": "1.0.0",
+      "author": {
+        "name": "nelta9x",
+        "email": "nelta9x@gmail.com"
+      },
+      "homepage": "https://github.com/nelta9x/game-balance-designer-plugin",
+      "repository": "https://github.com/nelta9x/game-balance-designer-plugin",
+      "license": "MIT",
+      "keywords": ["game-design", "game-balance", "game-economy", "drop-tables"],
+      "category": "game-development",
+      "tags": ["게임", "밸런스", "수치기획", "경험치", "드롭률"]
+    }
+  ]
+}
