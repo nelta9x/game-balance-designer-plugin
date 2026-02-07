@@ -32,3 +32,8 @@
 - 세션 길이는? (10~20분 / 30~60분 / 2시간+)
 - 주요 체감 목표는? (빠른 성장 / 완만한 성장 / 후반 장기)
 - 콘텐츠 티어 수는? (적을수록 Linear/낮은 Power가 유리)
+
+## 관련 문서
+- `./intent-curve-one-pager.md` (상담용 초압축 의도-모델 요약표)
+- `./growth-intent-curve-playbook.md` (선형/지수/계단식을 체감 의도로 바로 고르는 사례집)
+- `./experience-tables.md` (선택한 모델을 실제 XP 테이블로 변환)

@@ -1,0 +1,535 @@
+{
+  "suite": "game-balance-designer-golden-prompts",
+  "version": "1.0.0",
+  "locale": "ko-KR",
+  "description": "game-balance-designer 에이전트의 회귀 품질 검증용 골든 프롬프트 세트. 분석/설계/문제 해결 3유형의 출력 형식, 수학적 근거, 검증 가능성, 참조 라우팅을 점검한다.\n",
+  "templates": {
+    "analysis_default": {
+      "required_sections": [
+        "## 현황 요약",
+        "## 가정",
+        "## 분석",
+        "## 권장 사항",
+        "## 검증 방법"
+      ],
+      "max_assumptions": 3,
+      "required_traits": [
+        "근거 없는 매직 넘버 금지",
+        "영향 지표(TTK/TTE/클리어율 등) 명시",
+        "최소 1개 이상의 로그/텔레메트리 제안"
+      ]
+    },
+    "design_default": {
+      "required_sections": [
+        "## 설계 목표",
+        "## 가정",
+        "## 제안 수치",
+        "## 설계 근거",
+        "## 의존성 경고",
+        "## 검증 방법"
+      ],
+      "max_assumptions": 3,
+      "required_traits": [
+        "모델/파라미터 선택 이유 설명",
+        "수치 제안은 표 또는 수식 포함",
+        "콘텐츠/경제 파급효과 점검"
+      ]
+    },
+    "troubleshooting_default": {
+      "required_sections": [
+        "## 문제 정의",
+        "## 가정",
+        "## 원인 분석",
+        "## 해결 방안",
+        "## 권장안",
+        "## 파급 효과"
+      ],
+      "max_assumptions": 3,
+      "required_traits": [
+        "원인-대응 매핑이 명확할 것",
+        "트레이드오프를 표로 비교할 것",
+        "패치 후 검증 지표 제시"
+      ]
+    }
+  },
+  "cases": [
+    {
+      "id": "A01",
+      "category": "analysis",
+      "title": "XP 페이싱 병목 분석",
+      "expected_template": "analysis_default",
+      "prompt": "레벨업이 중반부터 갑자기 너무 느려졌어. 아래 데이터를 분석해서 병목 지점을 찾아줘.\n\n구간별 평균 레벨업 시간(분)\n- Lv 1~10: 2.1\n- Lv 11~20: 3.4\n- Lv 21~30: 8.9\n- Lv 31~40: 12.2\n\n구간별 평균 획득 XP/분\n- Lv 1~10: 120\n- Lv 11~20: 145\n- Lv 21~30: 152\n- Lv 31~40: 160\n\n목표 체감은 \"레벨이 올라가도 천천히 어려워지되, 막힌 느낌은 없게\"야.\n",
+      "required_references": [
+        "experience-tables.md",
+        "curve-genre-tempo.md"
+      ],
+      "required_keywords": [
+        "병목",
+        "구간",
+        "레벨업 시간"
+      ],
+      "preferred_script": null
+    },
+    {
+      "id": "A02",
+      "category": "analysis",
+      "title": "전투 TTK 스파이크 분석",
+      "expected_template": "analysis_default",
+      "prompt": "스테이지 난이도 스파이크가 있다는 피드백이 많아.\n아래 값으로 TTK/EHP 관점에서 어디가 튀는지 분석해줘.\n\n| Stage | 플레이어 기대 DPS | 적 HP | 피해감소율 |\n|-------|-------------------|-------|------------|\n| 8 | 1400 | 18000 | 0.20 |\n| 9 | 1500 | 21000 | 0.22 |\n| 10 | 1600 | 38000 | 0.30 |\n| 11 | 1700 | 42000 | 0.32 |\n\n우리 액션 RPG 목표 TTK는 일반몹 2~4초, 엘리트 8~14초야.\n",
+      "required_references": [
+        "combat-ttk-ehp.md",
+        "encounter-clear-probability.md"
+      ],
+      "required_keywords": [
+        "TTK",
+        "EHP",
+        "스파이크"
+      ],
+      "preferred_script": "ttk_ehp_calculator.py"
+    },
+    {
+      "id": "A03",
+      "category": "analysis",
+      "title": "인플레이션 징후 분석",
+      "expected_template": "analysis_default",
+      "prompt": "이벤트 이후 경제가 흔들린다는 보고가 있어.\n코호트별 Faucet/Sink와 TTE를 분석해줘.\n\n- 신규 코호트: Faucet 900, Sink 760, 목표 아이템 가격 6000\n- 중간 코호트: Faucet 1500, Sink 1180, 목표 아이템 가격 12000\n- 엔드 코호트: Faucet 3000, Sink 2100, 목표 아이템 가격 28000\n\n이전 패치 대비 Faucet은 모든 코호트에서 +20% 증가했어.\n",
+      "required_references": [
+        "economy-faucet-sink.md",
+        "drop-tables.md"
+      ],
+      "required_keywords": [
+        "F/S",
+        "TTE",
+        "코호트"
+      ],
+      "preferred_script": "economy_flow_simulator.py"
+    },
+    {
+      "id": "A04",
+      "category": "analysis",
+      "title": "드롭 테이블 체감 불공정 분석",
+      "expected_template": "analysis_default",
+      "prompt": "유저가 \"희귀 재료가 체감상 너무 안 나온다\"고 해.\n현재 테이블과 실제 로그를 비교해서 분석해줘.\n\n이론 테이블(한 번의 처치당)\n- 일반 재료: 70%\n- 희귀 재료: 20%\n- 에픽 재료: 10%\n\n최근 10,000킬 로그\n- 일반 재료: 7240회\n- 희귀 재료: 1850회\n- 에픽 재료: 910회\n\n행운 스탯 평균은 35야.\n",
+      "required_references": [
+        "drop-tables.md",
+        "diminishing-returns.md"
+      ],
+      "required_keywords": [
+        "이론",
+        "로그",
+        "편차"
+      ],
+      "preferred_script": null
+    },
+    {
+      "id": "A05",
+      "category": "analysis",
+      "title": "강화 비용 체감 분석",
+      "expected_template": "analysis_default",
+      "prompt": "강화 시스템이 너무 가혹하다는 의견이 많아.\n아래 규칙 기준으로 기대비용과 tail risk를 분석해줘.\n\n목표: +0 -> +8\n규칙:\n- +0~+2: 성공 100%, 90%, 80%\n- +3~+6: 성공 60%, 45%, 35%, 25% (실패 시 유지 70%, 하락 30%)\n- +7: 성공 20% (실패 시 유지 60%, 하락 30%, 파괴 10%, 파괴시 +0)\n\n단계별 비용은 [100, 200, 350, 500, 800, 1200, 1800, 2500]\n",
+      "required_references": [
+        "enhancement-expected-cost.md",
+        "pity-systems.md"
+      ],
+      "required_keywords": [
+        "평균",
+        "p90",
+        "p95"
+      ],
+      "preferred_script": "enhancement_cost_simulator.py"
+    },
+    {
+      "id": "A06",
+      "category": "analysis",
+      "title": "스테이지 클리어율/재시도 분석",
+      "expected_template": "analysis_default",
+      "prompt": "아래 스테이지별 첫 시도 클리어율과 재시도 분포를 보고,\n난이도 곡선이 의도(메인 캠페인 첫 시도 55~70%)에 맞는지 분석해줘.\n\n| Stage | 첫 시도 클리어율 | p90 재시도 횟수 |\n|-------|------------------|-----------------|\n| 12 | 72% | 3 |\n| 13 | 64% | 4 |\n| 14 | 49% | 7 |\n| 15 | 46% | 8 |\n",
+      "required_references": [
+        "encounter-clear-probability.md",
+        "combat-ttk-ehp.md"
+      ],
+      "required_keywords": [
+        "첫 시도 클리어율",
+        "p90",
+        "목표 밴드"
+      ],
+      "preferred_script": "clear_probability_tuner.py"
+    },
+    {
+      "id": "D01",
+      "category": "design",
+      "title": "세션형 액션 XP 테이블 설계",
+      "expected_template": "design_default",
+      "prompt": "20분 세션형 액션 게임의 레벨 1~40 경험치 테이블을 설계해줘.\n목표는 초반 5분 내 6레벨, 중반부터는 레벨업 간격이 완만히 늘어나도록.\n플레이어가 \"성장 체감은 빠르지만 후반이 완전히 풀리진 않게\" 느끼게 해줘.\n",
+      "required_references": [
+        "experience-tables.md",
+        "curve-genre-tempo.md"
+      ],
+      "required_keywords": [
+        "세션",
+        "구간",
+        "테이블"
+      ],
+      "preferred_script": null
+    },
+    {
+      "id": "D02",
+      "category": "design",
+      "title": "보스 페이즈 TTK 타깃 설계",
+      "expected_template": "design_default",
+      "prompt": "3페이즈 보스를 설계 중이야.\n목표 시간은 총 150~180초, 각 페이즈는 난이도가 올라가되 좌절은 과하지 않게.\n\n파티 기준 기대 DPS는 5200이고, 페이즈별 피해감소율은 0.25 / 0.30 / 0.35를 고려하고 싶어.\n페이즈별 권장 HP를 역산해서 제안해줘.\n",
+      "required_references": [
+        "combat-ttk-ehp.md",
+        "encounter-clear-probability.md"
+      ],
+      "required_keywords": [
+        "페이즈",
+        "HP 역산",
+        "총 전투 시간"
+      ],
+      "preferred_script": "ttk_ehp_calculator.py"
+    },
+    {
+      "id": "D03",
+      "category": "design",
+      "title": "경제 완충 패치 설계",
+      "expected_template": "design_default",
+      "prompt": "이벤트로 드랍을 올렸더니 성장은 빨라졌는데 인플레가 걱정돼.\n재미는 유지하면서 경제를 안정화하는 패치안을 설계해줘.\n\n현 상태(엔드 코호트):\n- Faucet 2800\n- Sink 2100\n- 목표 아이템 가격 32000\n- 목표 TTE 25~35일\n",
+      "required_references": [
+        "economy-faucet-sink.md",
+        "drop-tables.md"
+      ],
+      "required_keywords": [
+        "완충",
+        "F/S",
+        "TTE 목표"
+      ],
+      "preferred_script": "economy_flow_simulator.py"
+    },
+    {
+      "id": "D04",
+      "category": "design",
+      "title": "픽업 배너 pity 구조 설계",
+      "expected_template": "design_default",
+      "prompt": "픽업 배너를 설계해줘.\n요구사항:\n- SSR 기본 1%\n- 유저 평균 획득은 65회 내외\n- 최악 케이스는 90회 확정\n- 중복 체감이 심하지 않게 보호 규칙 포함\n",
+      "required_references": [
+        "pity-systems.md",
+        "drop-tables.md"
+      ],
+      "required_keywords": [
+        "소프트 pity",
+        "하드 pity",
+        "중복 보호"
+      ],
+      "preferred_script": "clear_probability_tuner.py"
+    },
+    {
+      "id": "D05",
+      "category": "design",
+      "title": "강화 시스템 재설계",
+      "expected_template": "design_default",
+      "prompt": "현재 강화 시스템이 과금/무과금 모두 피로하다는 의견이 있어.\n+0~+10 강화 규칙을 새로 제안해줘.\n목표:\n- +10 도달 기대비용은 기존 대비 -20%\n- p95 비용은 크게 낮출 것\n- 실패 긴장감은 완전히 제거하지 않을 것\n",
+      "required_references": [
+        "enhancement-expected-cost.md",
+        "pity-systems.md"
+      ],
+      "required_keywords": [
+        "기대비용",
+        "p95",
+        "긴장감"
+      ],
+      "preferred_script": "enhancement_cost_simulator.py"
+    },
+    {
+      "id": "D06",
+      "category": "design",
+      "title": "챕터 난이도/클리어율 설계",
+      "expected_template": "design_default",
+      "prompt": "챕터 6~10 난이도 곡선을 설계해줘.\n목표 첫 시도 클리어율은\n- 일반 스테이지: 60~70%\n- 챕터 보스: 45~55%\n\n재시도 학습 효과가 있는 구조(리트라이 보정)를 포함해줘.\n",
+      "required_references": [
+        "encounter-clear-probability.md",
+        "combat-ttk-ehp.md"
+      ],
+      "required_keywords": [
+        "목표 클리어율",
+        "리트라이",
+        "보스"
+      ],
+      "preferred_script": "clear_probability_tuner.py"
+    },
+    {
+      "id": "T01",
+      "category": "troubleshooting",
+      "title": "중반 레벨업 정체 해결",
+      "expected_template": "troubleshooting_default",
+      "prompt": "레벨 25 이후 레벨업이 급격히 느려져서 이탈이 늘어.\n지난주 패치에서 경험치 요구량만 1.6배 올렸고, 사냥터 보상은 그대로였어.\n이 문제를 해결하는 방안을 우선순위로 제시해줘.\n",
+      "required_references": [
+        "experience-tables.md",
+        "curve-genre-tempo.md"
+      ],
+      "required_keywords": [
+        "정체",
+        "원인",
+        "우선순위"
+      ],
+      "preferred_script": null
+    },
+    {
+      "id": "T02",
+      "category": "troubleshooting",
+      "title": "보스 난이도 급상승 해결",
+      "expected_template": "troubleshooting_default",
+      "prompt": "챕터 9 보스에서 재시도 횟수가 급증했어.\n패치 내용은 보스 HP +25%, 피해감소율 +8%였고 플레이어 평균 DPS는 거의 변하지 않았어.\n어디를 먼저 조정해야 할지 해결안을 제시해줘.\n",
+      "required_references": [
+        "combat-ttk-ehp.md",
+        "encounter-clear-probability.md"
+      ],
+      "required_keywords": [
+        "재시도",
+        "조정 레버",
+        "우선 권장안"
+      ],
+      "preferred_script": "ttk_ehp_calculator.py"
+    },
+    {
+      "id": "T03",
+      "category": "troubleshooting",
+      "title": "이벤트 후 인플레 대응",
+      "expected_template": "troubleshooting_default",
+      "prompt": "이벤트 이후 거래소 가격이 2주 연속 상승 중이야.\n현재 엔드 코호트 평균은 Faucet 3200, Sink 2200이고,\n핵심 재료 TTE가 35일에서 18일로 급감했어.\n어떻게 안정화할지 해결책 A/B와 권장안을 제시해줘.\n",
+      "required_references": [
+        "economy-faucet-sink.md",
+        "drop-tables.md"
+      ],
+      "required_keywords": [
+        "인플레",
+        "A/B",
+        "권장안"
+      ],
+      "preferred_script": "economy_flow_simulator.py"
+    },
+    {
+      "id": "T04",
+      "category": "troubleshooting",
+      "title": "픽업 배너 불신 해소",
+      "expected_template": "troubleshooting_default",
+      "prompt": "픽업 배너에서 \"천장 전까지 너무 안 나온다\"는 불만이 커.\n현재 구조는 SSR 0.8%, 100회 하드 pity, 소프트 pity 없음.\n유저 신뢰를 회복하면서 매출 급락을 피하는 개선안을 제시해줘.\n",
+      "required_references": [
+        "pity-systems.md",
+        "drop-tables.md"
+      ],
+      "required_keywords": [
+        "신뢰",
+        "소프트 pity",
+        "투명성"
+      ],
+      "preferred_script": "clear_probability_tuner.py"
+    },
+    {
+      "id": "T05",
+      "category": "troubleshooting",
+      "title": "강화 피로도/이탈 대응",
+      "expected_template": "troubleshooting_default",
+      "prompt": "강화 +8~+10 구간에서 유저 이탈이 많아.\n로그상 +9 도달 전 포기율이 48%고, 커뮤니티 불만은 \"운 나쁘면 끝이 없다\"야.\n비용 분산을 줄이면서 긴장감은 남기는 대응안을 제시해줘.\n",
+      "required_references": [
+        "enhancement-expected-cost.md",
+        "pity-systems.md"
+      ],
+      "required_keywords": [
+        "분산",
+        "포기율",
+        "긴장감"
+      ],
+      "preferred_script": "enhancement_cost_simulator.py"
+    },
+    {
+      "id": "T06",
+      "category": "troubleshooting",
+      "title": "고레벨 파밍 악용 대응",
+      "expected_template": "troubleshooting_default",
+      "prompt": "상위 유저가 저레벨 지역에서 과도한 파밍으로 경제를 흔들고 있어.\n현재 드롭 보정은 레벨 차이 +9부터 10% 하한만 적용돼.\n파밍 악용을 막으면서 신규 유저 성장은 해치지 않는 개선안을 제시해줘.\n",
+      "required_references": [
+        "drop-tables.md",
+        "economy-faucet-sink.md"
+      ],
+      "required_keywords": [
+        "파밍 악용",
+        "레벨 보정",
+        "신규 유저 영향"
+      ],
+      "preferred_script": "economy_flow_simulator.py"
+    },
+    {
+      "id": "X01",
+      "category": "cross-system",
+      "title": "성장-전투-경제 연동 검증",
+      "expected_template": "design_default",
+      "prompt": "시즌 업데이트로 아래를 동시에 하려고 해.\n- 경험치 요구량 15% 증가\n- 보스 HP 12% 증가\n- 드롭량 10% 증가\n\n이 세 변경이 서로 충돌하지 않게 통합 설계안을 만들어줘.\n특히 레벨업 시간, 보스 TTK, 핵심 재료 TTE를 함께 맞추고 싶어.\n",
+      "required_references": [
+        "experience-tables.md",
+        "combat-ttk-ehp.md",
+        "economy-faucet-sink.md"
+      ],
+      "required_keywords": [
+        "통합",
+        "충돌",
+        "동시 최적화"
+      ],
+      "preferred_script": "economy_flow_simulator.py"
+    },
+    {
+      "id": "X02",
+      "category": "cross-system",
+      "title": "라이브옵스 이벤트 밸런스 검증",
+      "expected_template": "analysis_default",
+      "prompt": "14일 이벤트 설계 검증이 필요해.\n목표는 \"복귀 유저 온보딩 강화\"인데, 기존 유저 인플레는 최소화해야 해.\n이벤트 보상은 일일 재화 +25%, 강화 재료 +30%, 픽업 티켓 5장/주야.\n위험 포인트와 완충 레버를 분석해줘.\n",
+      "required_references": [
+        "economy-faucet-sink.md",
+        "enhancement-expected-cost.md",
+        "pity-systems.md"
+      ],
+      "required_keywords": [
+        "14일",
+        "완충 레버",
+        "위험 포인트"
+      ],
+      "preferred_script": "economy_flow_simulator.py"
+    },
+    {
+      "id": "A07",
+      "category": "analysis",
+      "title": "체감 의도 기반 성장 곡선 분석",
+      "expected_template": "analysis_default",
+      "prompt": "유저 피드백이 엇갈려.\n\n- 일부는 \"지금 성장 곡선이 너무 단조롭고 재미가 없다\"\n- 일부는 \"갑자기 막히는 구간이 싫다\"\n\n우리가 원하는 체감은 \"기본적으로 예측 가능하지만, 챕터 전환에서는 약간의 긴장감\"이야.\n선형/지수/계단식 중 무엇을 어떻게 써야 할지 분석해줘.",
+      "required_references": [
+        "growth-intent-curve-playbook.md",
+        "curve-genre-tempo.md"
+      ],
+      "required_keywords": [
+        "선형",
+        "지수",
+        "계단식"
+      ],
+      "preferred_script": null
+    },
+    {
+      "id": "D07",
+      "category": "design",
+      "title": "의도 중심 하이브리드 성장 곡선 설계",
+      "expected_template": "design_default",
+      "prompt": "신규 시즌 성장 곡선을 의도 중심으로 설계하고 싶어.\n목표 체감은:\n- 초반 15분: 빠른 도파민\n- 중반 2~3시간: 안정적 진도\n- 후반: 장기 목표가 남아야 함\n\n선형/지수/계단식 조합으로 제안해줘. 리스크와 검증 지표도 같이.",
+      "required_references": [
+        "growth-intent-curve-playbook.md",
+        "experience-tables.md"
+      ],
+      "required_keywords": [
+        "도파민",
+        "장기 목표",
+        "리스크"
+      ],
+      "preferred_script": null
+    },
+    {
+      "id": "T07",
+      "category": "troubleshooting",
+      "title": "계단식 경계 충격 문제 해결",
+      "expected_template": "troubleshooting_default",
+      "prompt": "최근 패치에서 레벨 30 경계 이후 유저 이탈이 늘었어.\n현재 곡선은 구간형(계단식)인데, 29->30에서 필요 경험치가 급격히 올라.\n커뮤니티 반응은 \"갑자기 벽을 세웠다\"야.\n\n선형/지수/계단식 관점에서 원인을 정리하고 해결안을 제시해줘.",
+      "required_references": [
+        "growth-intent-curve-playbook.md",
+        "experience-tables.md"
+      ],
+      "required_keywords": [
+        "계단식",
+        "경계",
+        "권장안"
+      ],
+      "preferred_script": null
+    },
+    {
+      "id": "A08",
+      "category": "analysis",
+      "title": "지수 과적용 급벽 리스크 분석",
+      "expected_template": "analysis_default",
+      "prompt": "최근 성장 곡선을 지수로 바꿨는데 중반 이탈이 늘었어.\n우리는 원래 \"예측 가능하고 공정한 성장\" 느낌을 원했어.\n\n현재 설정:\n- base XP: 120\n- ratio: 1.24\n- Lv 20 이후도 동일 ratio 유지\n\n선형/지수/계단식 관점에서 왜 문제가 생겼는지 분석해줘.",
+      "required_references": [
+        "intent-curve-one-pager.md",
+        "growth-intent-curve-playbook.md"
+      ],
+      "required_keywords": [
+        "지수",
+        "급벽",
+        "완충"
+      ],
+      "preferred_script": null
+    },
+    {
+      "id": "D08",
+      "category": "design",
+      "title": "예측 가능성 우선 성장곡선 재설계",
+      "expected_template": "design_default",
+      "prompt": "다음 시즌은 유저가 계산 가능한 성장감을 최우선으로 원해.\n다만 후반에는 최소한의 장기 목표는 남겨야 해.\n\n선형을 기본으로 하되 필요하면 지수/계단식을 제한적으로 섞는 설계안을 제시해줘.",
+      "required_references": [
+        "intent-curve-one-pager.md",
+        "experience-tables.md"
+      ],
+      "required_keywords": [
+        "예측 가능",
+        "선형",
+        "대안"
+      ],
+      "preferred_script": null
+    },
+    {
+      "id": "T08",
+      "category": "troubleshooting",
+      "title": "계단식 경계 점프 이탈 대응",
+      "expected_template": "troubleshooting_default",
+      "prompt": "레벨 29->30에서 필요 경험치가 2.3배로 점프해 이탈이 크게 올랐어.\n현재 구조는 챕터 경계마다 계단식 상승이 강하게 들어가 있어.\n\n왜 이런 문제가 생겼는지 정리하고, 경계 충격을 줄이는 해결안을 제시해줘.",
+      "required_references": [
+        "intent-curve-one-pager.md",
+        "growth-intent-curve-playbook.md"
+      ],
+      "required_keywords": [
+        "계단식",
+        "경계",
+        "트레이드오프"
+      ],
+      "preferred_script": null
+    },
+    {
+      "id": "T09",
+      "category": "troubleshooting",
+      "title": "선형 장기 구간 단조로움 대응",
+      "expected_template": "troubleshooting_default",
+      "prompt": "출시 이후 계속 선형 곡선만 유지했더니 후반 유저가 \"성장에 긴장감이 없다\"고 해.\n하지만 우리는 중반 급벽은 절대 피해야 해.\n\n선형/지수/계단식 관점에서 원인과 대응안을 제시해줘.",
+      "required_references": [
+        "intent-curve-one-pager.md",
+        "growth-intent-curve-playbook.md"
+      ],
+      "required_keywords": [
+        "선형",
+        "지수",
+        "권장안"
+      ],
+      "preferred_script": null
+    },
+    {
+      "id": "A09",
+      "category": "analysis",
+      "title": "재미 가설 기반 밸런스 검증 프레임 분석",
+      "expected_template": "analysis_default",
+      "prompt": "팀에서 \"재미\"를 수치로 다루고 싶은데 너무 모호하다는 의견이야.\n현재 챕터 7 보스 구간은 첫 시도 클리어율 52%, p90 재시도 6회, 챕터 이탈률 11%야.\n피드백은 \"긴장감은 있는데 억울할 때가 있다\"가 많아.\n\n재미를 절대 공식으로 만들지 않고, 어떤 발상 프레임으로 분석해야 하는지 제안해줘.",
+      "required_references": [
+        "fun-quant-thinking.md",
+        "growth-intent-curve-playbook.md"
+      ],
+      "required_keywords": [
+        "재미 가설",
+        "가드레일",
+        "실패 조건"
+      ],
+      "preferred_script": null
+    }
+  ]
+}

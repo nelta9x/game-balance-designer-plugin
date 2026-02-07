@@ -3,10 +3,17 @@ name: game-balance-math
 description: 게임 밸런스 수학적 모델링. 성장 곡선, 확률 시스템, 경제 설계에 사용되는 수학 공식 참고 자료.
 references:
   - references/experience-tables.md
+  - references/intent-curve-one-pager.md
+  - references/growth-intent-curve-playbook.md
+  - references/fun-quant-thinking.md
   - references/drop-tables.md
   - references/diminishing-returns.md
   - references/pity-systems.md
   - references/curve-genre-tempo.md
+  - references/combat-ttk-ehp.md
+  - references/economy-faucet-sink.md
+  - references/encounter-clear-probability.md
+  - references/enhancement-expected-cost.md
 ---
 
 # 역할 (Role)
@@ -111,7 +118,7 @@ $$ P(i) = \frac{w_i}{\sum_{j} w_j} $$
 **용도**: 가챠, 강화, 연속 실패 보호
 
 ### 4-1. 선형 Pity
-$$ P(n) = \min(P_{base} + (n \times \Delta), P_{max}) $$
+$$ P(n) = \min(P_{base} + ((n-1) \times \Delta), P_{max}) $$
 
 | 시도 | 기본 1% + 1%씩 증가 |
 |------|---------------------|
@@ -201,6 +208,19 @@ int WeightedRandom(int[] weights) {
 - 역수 함수: k가 "50% 도달점"임을 명심
 - Pity: 기대값과 최악 케이스 모두 계산해서 공개
 
+# 계산 스크립트 (Scripts)
+
+반복 계산이 필요한 요청(표 재생성, what-if 비교, p90/p95 산출)에서는 아래 스크립트를 우선 사용한다.
+
+| 스크립트 | 용도 | 실행 예시 |
+|---|---|---|
+| `scripts/ttk_ehp_calculator.py` | DPS/EHP/TTK 계산, 목표 TTK 기반 HP 역산 | `python3 skills/game-balance-math/scripts/ttk_ehp_calculator.py` |
+| `scripts/economy_flow_simulator.py` | Faucet/Sink/TTE, 패치 전후 재고 추이 시뮬레이션 | `python3 skills/game-balance-math/scripts/economy_flow_simulator.py` |
+| `scripts/enhancement_cost_simulator.py` | 강화 기대 시도/비용 + p50/p90/p95 계산 | `python3 skills/game-balance-math/scripts/enhancement_cost_simulator.py` |
+| `scripts/clear_probability_tuner.py` | 로지스틱 클리어율 곡선/역산/재시도 횟수 계산 | `python3 skills/game-balance-math/scripts/clear_probability_tuner.py` |
+
+입력 파일이 있으면 `--input <json>`을 사용하고, 없으면 각 스크립트의 내장 샘플로 바로 실행된다.
+
 # 참고 자료 (References)
 
 참고용 안내:
@@ -209,10 +229,34 @@ int WeightedRandom(int[] weights) {
 
 아래 표는 참고 상황과 내용을 함께 요약한다.
 
+### 요청-문서 빠른 라우팅
+
+| 요청 신호(의도) | 먼저 볼 문서 | 핵심 산출 |
+|---|---|---|
+| "레벨업이 느리다/빠르다", "경험치 테이블 설계" | `experience-tables.md` | 레벨 구간별 XP 곡선/레벨업 시간 |
+| "빠르게 추천해줘", "요약표로 먼저 알려줘" | `intent-curve-one-pager.md` | 의도-모델-리스크-지표를 1페이지로 제시 |
+| "어떤 느낌을 주고 싶다", "선형/지수/계단식 추천" | `growth-intent-curve-playbook.md` | 체감 의도 기반 모델 추천 + 리스크/검증 지표 |
+| "재미를 수치로 어떻게 봐야 하지?", "모호한 재미를 검증하고 싶다" | `fun-quant-thinking.md` | 재미를 가설/관찰 신호/실패 조건으로 변환 |
+| "드랍률 이상함", "희귀도 확률 조정" | `drop-tables.md` | 가중치/희귀도/조건부 드롭 구조 |
+| "쿨감/공속/방어 효율 이상" | `diminishing-returns.md` | 수확 체감 공식과 k값 |
+| "가챠/강화 실패 체감이 나쁨" | `pity-systems.md` | pity/천장/중복보호 구조 |
+| "장르 템포에 맞는 곡선을 고르고 싶다" | `curve-genre-tempo.md` | 장르-템포별 모델 후보 |
+| "전투가 길다/짧다", "보스 체력 역산" | `combat-ttk-ehp.md` | DPS/EHP/TTK 기반 체력 산정 |
+| "스테이지 클리어율 목표 설정" | `encounter-clear-probability.md` | 목표 클리어율/재시도 횟수 |
+| "재화 인플레/디플레 점검" | `economy-faucet-sink.md` | Faucet-Sink/TTE/패치 충격 |
+| "강화 기대비용 계산", "보호권 가치" | `enhancement-expected-cost.md` | 평균/p90/p95 소모량 |
+
 | 파일 | 참고 상황 | 내용 |
 |------|----------|------|
 | `experience-tables.md` | XP/성장 곡선 | 선형/지수/다항식/구간별 경험치 테이블 예시 |
+| `intent-curve-one-pager.md` | 빠른 상담/요약 답변 | 의도-모델-리스크-검증 지표 1페이지 요약 |
+| `growth-intent-curve-playbook.md` | 체감 의도 기반 조언 | 선형/지수/계단식 선택 사례, 안티패턴, 복구 레버 |
+| `fun-quant-thinking.md` | 재미 지표 발상/검증 | 재미를 절대식이 아니라 가설+관찰 장치로 다루는 프레임 |
 | `drop-tables.md` | 드롭/가중치 | 가중치, 희귀도 티어, 조건부 드롭, 쿠폰 수집가 문제 |
 | `diminishing-returns.md` | 수익 체감/소프트캡 | 쿨감, 공속, 방어력, 치명타 수확체감 예시 |
 | `pity-systems.md` | 가챠/강화 보정 | 선형/소프트/지수 Pity, 토큰형, 기대값 계산 |
 | `curve-genre-tempo.md` | 곡선 선택/장르-템포(휴리스틱) | 곡선-장르/템포 매핑과 선택 질문 |
+| `combat-ttk-ehp.md` | 전투 페이싱/난이도 | 기대 DPS, EHP, TTK 목표 밴드, 보스 페이즈 시간 예산 |
+| `economy-faucet-sink.md` | 경제 수지/인플레이션 | Faucet/Sink 수지식, TTE, 패치 충격 시뮬레이션 |
+| `encounter-clear-probability.md` | 스테이지 클리어율 | 로지스틱 클리어 확률 모델, 목표 확률 역산, 재시도 확률 |
+| `enhancement-expected-cost.md` | 강화 기대비용 | 상태전이 기반 기대 시도/비용, 퍼센타일 예산, 보호권 가치 |

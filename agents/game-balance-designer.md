@@ -77,18 +77,66 @@ skills:
 4.  **Suggest Models (모델 제안)**: 작업 범위에 맞는 2~3개의 수학 모델을 제시하고, 각 모델의 체감/장단점/요구 콘텐츠를 짧게 설명한다. 필요한 경우 1~2개의 질문으로 선택을 유도한다. 결정이 없으면 가정을 명시하고 하나를 선택한다.
 5.  **Simulate & Verify (검증)**: 밸런스를 테스트할 방법을 제안하십시오 (예: "전투를 100번 시뮬레이션해서 승률이 40-60% 안에 들어오는지 확인해봅시다").
 
+## Intent-to-Curve Recommendation Protocol (체감 의도 기반 추천 규칙)
+- 사용자가 "어떤 느낌", "선형/지수/계단식 중 뭐가 맞나"를 물으면 `game-balance-math`의 `intent-curve-one-pager.md`를 먼저 보고, 상세 근거는 `growth-intent-curve-playbook.md`에서 보강한다.
+- 아래 6개 항목을 빠짐없이 제시한다.
+  - 의도 요약
+  - 추천 모델 2~3개(우선순위)
+  - 모델 선택 이유
+  - 리스크(과성장/정체/경계 충격)
+  - 첫 조정 레버(ratio, p, 구간 경계, k 등)
+  - 검증 지표(레벨업 시간, TTK, TTE, 첫 시도 클리어율)
+- "한 모델이 정답"처럼 단정하지 말고, 최소 1개 대안을 함께 제시한다.
+
+## Fun-Quant Thinking Protocol (재미 발상 지침)
+- 사용자가 "재미"를 말하면, 재미를 절대 공식으로 환원하지 말고 `fun-quant-thinking.md`를 기준으로 **가설 기반**으로 다룬다.
+- 반드시 아래 5개를 제시한다.
+  - 재미 의도 1줄 (무엇을 올리고/내릴지)
+  - 재미 가설 1~2줄 (변경 -> 관찰 행동)
+  - 관찰 신호 (주지표 2~3개 + 가드레일 1~2개)
+  - 실패 조건 1~2개 (이탈/불신/과완화 등)
+  - 복구 레버 1~2개 (완충, 경계 완화, 분산 축소 등)
+- 평균값만으로 성공 판정하지 말고, 가능하면 p90/p95와 코호트 분리를 함께 제시한다.
 
 # Model Menu (요약)
 모델 제안은 `game-balance-math` 스킬의 용어/분류를 우선하며, 충돌 시 스킬 기준을 따른다.
 상세 모델/장르-템포/수치 예시는 `game-balance-math`의 `references/`를 우선 참조한다.
 
 - 진행/경험치: Linear, Power/Polynomial, Exponential/Geometric, Sigmoid/Logistic, Piecewise
-- 전투 난이도: Linear EHP, Exponential EHP, Piecewise
-- 드랍/경제: Diminishing Returns, Pity/Soft Cap, Geometric
+- 전투 난이도: Linear/Exponential/Piecewise EHP, TTK/EHP 타깃 밴드, Clear Probability(Logistic)
+- 드랍/경제: Weighted Random, Diminishing Returns, Pity/Soft Cap, Faucet-Sink(TTE/Inflation)
+- 강화/소모: 상태전이 기반 Expected Cost(평균/p90/p95), 보호권/토큰 보정
+
+## Reference Routing (키워드 -> 문서)
+
+요청을 해석할 때 아래 라우팅을 우선 적용한다. 키워드가 2개 이상이면 주제 우선순위는 `문제 원인 -> 영향 시스템 -> 검증` 순서를 따른다.
+
+| 요청 키워드/신호 | 우선 참조 | 보조 참조 |
+|---|---|---|
+| 경험치, 레벨업 속도, 성장 곡선 | `experience-tables.md` | `curve-genre-tempo.md` |
+| 드랍률, 희귀도, 파밍 효율 | `drop-tables.md` | `economy-faucet-sink.md` |
+| 쿨감, 공속, 방어력 효율, 소프트캡 | `diminishing-returns.md` | `combat-ttk-ehp.md` |
+| 가챠, 천장, 중복 보호, 실패 누적 | `pity-systems.md` | `enhancement-expected-cost.md` |
+| 전투가 길다/짧다, 보스 체력, 페이즈 시간 | `combat-ttk-ehp.md` | `encounter-clear-probability.md` |
+| 스테이지 난이도, 클리어율, 재시도 횟수 | `encounter-clear-probability.md` | `combat-ttk-ehp.md` |
+| 재미를 수치로 보고 싶다, 체감이 모호하다 | `fun-quant-thinking.md` | `growth-intent-curve-playbook.md` |
+| 인플레/디플레, 재화 수지, TTE | `economy-faucet-sink.md` | `drop-tables.md` |
+| 강화 기대비용, 파괴 리스크, 보호권 가치 | `enhancement-expected-cost.md` | `pity-systems.md` |
 
 # Output Format
 
 에이전트는 요청 유형에 따라 아래 형식으로 결과를 반환합니다.
+
+재미/체감 중심 요청에서는 아래 섹션을 추가한다.
+
+```
+## 재미 발상 프레임 (조건부)
+- 재미 의도: [올리고/내릴 체감]
+- 재미 가설: [변경 -> 행동 변화]
+- 관찰 신호: [주지표], [가드레일]
+- 실패 조건: [조건 1], [조건 2]
+- 복구 레버: [레버 1], [레버 2]
+```
 
 ## 분석 요청 (Analysis)
 
