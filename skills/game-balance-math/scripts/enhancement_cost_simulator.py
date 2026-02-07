@@ -230,7 +230,7 @@ def build_result(payload: Dict[str, Any]) -> Dict[str, Any]:
         raise ValueError("target_level must be >= 1")
     if len(levels) < target_level:
         raise ValueError("levels length must be >= target_level")
-    start_level = max(0, min(target_level - 1, start_level))
+    start_level = max(0, min(target_level, start_level))
 
     expected_attempts, expected_costs = build_expected_equations(levels, target_level)
     trials = max(1, to_int(payload.get("trials"), 200000))
@@ -247,6 +247,13 @@ def build_result(payload: Dict[str, Any]) -> Dict[str, Any]:
             }
         )
 
+    if start_level >= target_level:
+        from_start_attempts = 0.0
+        from_start_cost = 0.0
+    else:
+        from_start_attempts = expected_attempts[start_level]
+        from_start_cost = expected_costs[start_level]
+
     return {
         "start_level": start_level,
         "target_level": target_level,
@@ -254,8 +261,8 @@ def build_result(payload: Dict[str, Any]) -> Dict[str, Any]:
             "rows": expected_rows,
             "from_start": {
                 "level": start_level,
-                "attempts": expected_attempts[start_level],
-                "cost": expected_costs[start_level],
+                "attempts": from_start_attempts,
+                "cost": from_start_cost,
             },
         },
         "simulation": simulation,

@@ -1,19 +1,6 @@
 ---
 name: game-balance-math
-description: 게임 밸런스 수학적 모델링. 성장 곡선, 확률 시스템, 경제 설계에 사용되는 수학 공식 참고 자료.
-references:
-  - references/experience-tables.md
-  - references/intent-curve-one-pager.md
-  - references/growth-intent-curve-playbook.md
-  - references/fun-quant-thinking.md
-  - references/drop-tables.md
-  - references/diminishing-returns.md
-  - references/pity-systems.md
-  - references/curve-genre-tempo.md
-  - references/combat-ttk-ehp.md
-  - references/economy-faucet-sink.md
-  - references/encounter-clear-probability.md
-  - references/enhancement-expected-cost.md
+description: 게임 밸런스 수학 모델링 및 테이블 설계 지원. Use when requests involve XP/level curves, TTK/EHP tuning, drop-rate weighting, pity or gacha or enhancement expected cost, clear probability, faucet-sink economy, percentile budgeting (p90/p95), or what-if comparisons.
 ---
 
 # 역할 (Role)
@@ -214,10 +201,10 @@ int WeightedRandom(int[] weights) {
 
 | 스크립트 | 용도 | 실행 예시 |
 |---|---|---|
-| `scripts/ttk_ehp_calculator.py` | DPS/EHP/TTK 계산, 목표 TTK 기반 HP 역산 | `python3 skills/game-balance-math/scripts/ttk_ehp_calculator.py` |
-| `scripts/economy_flow_simulator.py` | Faucet/Sink/TTE, 패치 전후 재고 추이 시뮬레이션 | `python3 skills/game-balance-math/scripts/economy_flow_simulator.py` |
-| `scripts/enhancement_cost_simulator.py` | 강화 기대 시도/비용 + p50/p90/p95 계산 | `python3 skills/game-balance-math/scripts/enhancement_cost_simulator.py` |
-| `scripts/clear_probability_tuner.py` | 로지스틱 클리어율 곡선/역산/재시도 횟수 계산 | `python3 skills/game-balance-math/scripts/clear_probability_tuner.py` |
+| `scripts/ttk_ehp_calculator.py` | DPS/EHP/TTK 계산, 목표 TTK 기반 HP 역산 | `python3 "${CODEX_HOME:-$HOME/.codex}/skills/game-balance-math/scripts/ttk_ehp_calculator.py"` |
+| `scripts/economy_flow_simulator.py` | Faucet/Sink/TTE, 패치 전후 재고 추이 시뮬레이션 | `python3 "${CODEX_HOME:-$HOME/.codex}/skills/game-balance-math/scripts/economy_flow_simulator.py"` |
+| `scripts/enhancement_cost_simulator.py` | 강화 기대 시도/비용 + p50/p90/p95 계산 | `python3 "${CODEX_HOME:-$HOME/.codex}/skills/game-balance-math/scripts/enhancement_cost_simulator.py"` |
+| `scripts/clear_probability_tuner.py` | 로지스틱 클리어율 곡선/역산/재시도 횟수 계산 | `python3 "${CODEX_HOME:-$HOME/.codex}/skills/game-balance-math/scripts/clear_probability_tuner.py"` |
 
 입력 파일이 있으면 `--input <json>`을 사용하고, 없으면 각 스크립트의 내장 샘플로 바로 실행된다.
 
