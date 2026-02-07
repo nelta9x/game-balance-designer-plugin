@@ -64,9 +64,9 @@ game-balance-designer-plugin/
 │       ├── game-balance-designer-golden-prompts.json
 │       ├── run_golden_checks.py
 │       ├── sample-responses/
-│       │   ├── A01~A09.md
+│       │   ├── A01~A10.md
 │       │   ├── D01~D08.md
-│       │   ├── T01~T09.md
+│       │   ├── T01~T10.md
 │       │   └── X01~X02.md
 │       └── README.md
 ├── README.md
@@ -132,7 +132,7 @@ game-balance-designer-plugin/
 - `tests/golden-prompts/README.md`
 
 구성:
-- 총 28개 케이스 (분석/설계/문제 해결/교차 시스템)
+- 총 30개 케이스 (분석/설계/문제 해결/교차 시스템)
 - 요청 유형별 필수 섹션 템플릿
 - 케이스별 필수 참조 문서/핵심 키워드/권장 계산 스크립트
 

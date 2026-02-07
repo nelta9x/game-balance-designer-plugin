@@ -6,17 +6,17 @@
 
 - `game-balance-designer-golden-prompts.json`
 - `run_golden_checks.py`
-- `sample-responses/` (`A01~A09.md`, `D01~D08.md`, `T01~T09.md`, `X01~X02.md`)
+- `sample-responses/` (`A01~A10.md`, `D01~D08.md`, `T01~T10.md`, `X01~X02.md`)
 - `README.md`
 
 ## 자동 실행/채점
 
-### 1) 스모크 체크 (lint + 스크립트 + 샘플 16케이스)
+### 1) 스모크 체크 (lint + 스크립트 + 샘플 18케이스)
 
 ```bash
 python3 tests/golden-prompts/run_golden_checks.py \
   --responses-dir tests/golden-prompts/sample-responses \
-  --case-ids A01,A02,A07,A08,A09,D01,D02,D07,D08,T01,T02,T07,T08,T09,X01,X02 \
+  --case-ids A01,A02,A07,A08,A09,A10,D01,D02,D07,D08,T01,T02,T07,T08,T09,T10,X01,X02 \
   --check-scripts
 ```
 
@@ -25,10 +25,10 @@ python3 tests/golden-prompts/run_golden_checks.py \
 ```bash
 python3 tests/golden-prompts/run_golden_checks.py \
   --responses-dir tests/golden-prompts/sample-responses \
-  --case-ids A01,A02,A07,A08,A09,D01,D02,D07,D08,T01,T02,T07,T08,T09,X01,X02
+  --case-ids A01,A02,A07,A08,A09,A10,D01,D02,D07,D08,T01,T02,T07,T08,T09,T10,X01,X02
 ```
 
-`sample-responses/`는 기본적으로 전체 28개 케이스(`A01~A09,D01~D08,T01~T09,X01~X02`)를 포함한다.
+`sample-responses/`는 기본적으로 전체 30개 케이스(`A01~A10,D01~D08,T01~T10,X01~X02`)를 포함한다.
 
 지원 포맷:
 - `--responses-dir`: `A01.md`, `A02.markdown`, `A03.txt` 파일 묶음
@@ -64,7 +64,7 @@ python3 tests/golden-prompts/run_golden_checks.py \
 ```bash
 python3 tests/golden-prompts/run_golden_checks.py \
   --responses-dir tests/golden-prompts/sample-responses \
-  --case-ids A01,A02,A07,A08,A09,D01,D02,D07,D08,T01,T02,T07,T08,T09,X01,X02 \
+  --case-ids A01,A02,A07,A08,A09,A10,D01,D02,D07,D08,T01,T02,T07,T08,T09,T10,X01,X02 \
   --format json \
   --output /tmp/golden-report.json
 ```

@@ -530,6 +530,40 @@
         "실패 조건"
       ],
       "preferred_script": null
+    },
+    {
+      "id": "A10",
+      "category": "analysis",
+      "title": "손맛/답답함 체감 신호 분석",
+      "expected_template": "analysis_default",
+      "prompt": "요즘 전투 피드백이 이렇게 나와.\n- \"타격은 되는데 손맛이 약하다\"\n- \"중반부터 답답함이 커진다\"\n- \"초반 속도감은 괜찮다\"\n\n최근 로그:\n- 첫 시도 클리어율: 68% -> 54%\n- p90 재시도: 3 -> 7\n- 평균 세션 길이: 18분 -> 24분\n\n수치를 늘리자는 답이 아니라, 이 신호를 어떻게 해석하고 어디부터 점검할지 분석해줘.",
+      "required_references": [
+        "fun-quant-thinking.md",
+        "combat-ttk-ehp.md"
+      ],
+      "required_keywords": [
+        "손맛",
+        "답답함",
+        "속도감"
+      ],
+      "preferred_script": null
+    },
+    {
+      "id": "T10",
+      "category": "troubleshooting",
+      "title": "지루함/벽 체감 악화 대응",
+      "expected_template": "troubleshooting_default",
+      "prompt": "라이브 이후 유저 반응이 \"중반이 지루하고 갑자기 벽이 느껴진다\"로 바뀌었어.\n지표는 챕터 5~6 구간 이탈률 +3.1%p, 첫 시도 클리어율 -9%p야.\n\n억까라는 반응이 커지지 않게, 문제 원인과 수정 A/B 및 권장안을 제시해줘.",
+      "required_references": [
+        "fun-quant-thinking.md",
+        "growth-intent-curve-playbook.md"
+      ],
+      "required_keywords": [
+        "지루함",
+        "벽",
+        "억까"
+      ],
+      "preferred_script": null
     }
   ]
 }

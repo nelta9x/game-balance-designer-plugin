@@ -1,7 +1,7 @@
 {
   "name": "game-balance-designer-plugin",
   "version": "1.0.0",
-  "description": "게임 밸런스 설계 에이전트 및 수학 공식 스킬. 경험치/난이도/드롭률/스탯 등 게임 수치 분석과 디자인을 지원합니다.",
+  "description": "게임 밸런스 설계 에이전트 및 수학 공식 스킬. 경험치/난이도/드롭률/스탯 등 게임 수치 분석과 디자인을 지원하며, 재미/지루함/억까/속도감/성장감/벽/손맛/답답함 같은 체감 표현도 적극 해석합니다.",
   "author": {
     "name": "nelta9x",
     "email": "nelta9x@gmail.com",
@@ -12,6 +12,14 @@
     "game-design",
     "game-balance",
     "game-economy",
-    "drop-tables"
+    "drop-tables",
+    "재미",
+    "지루함",
+    "억까",
+    "속도감",
+    "성장감",
+    "벽",
+    "손맛",
+    "답답함"
   ]
 }

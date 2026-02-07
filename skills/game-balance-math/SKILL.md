@@ -1,6 +1,6 @@
 ---
 name: game-balance-math
-description: 게임 밸런스 수학 모델링 및 테이블 설계 지원. Use when requests involve XP/level curves, TTK/EHP tuning, drop-rate weighting, pity or gacha or enhancement expected cost, clear probability, faucet-sink economy, percentile budgeting (p90/p95), or what-if comparisons.
+description: 게임 밸런스 수학 모델링 및 테이블 설계 지원. Use when requests involve XP/level curves, TTK/EHP tuning, drop-rate weighting, pity or gacha or enhancement expected cost, clear probability, faucet-sink economy, percentile budgeting (p90/p95), or what-if comparisons. Also trigger on player-feel cues: 재미, 지루함, 억까, 속도감, 성장감, 벽, 손맛, 답답함.
 ---
 
 # 역할 (Role)
