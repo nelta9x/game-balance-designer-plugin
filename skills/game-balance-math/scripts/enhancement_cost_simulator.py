@@ -171,34 +171,60 @@ def run_simulation(
     costs_list: List[float] = []
     truncated = 0
 
+    # Normalize per-level parameters once to keep the trial loop fast.
+    probs_success: List[float] = []
+    costs_per_attempt: List[float] = []
+    stay_threshold: List[float] = []
+    down_threshold: List[float] = []
+    down_levels: List[int] = []
+    break_levels: List[int] = []
+    break_costs: List[float] = []
+
+    for lv in range(target_level):
+        level = levels[lv]
+        probs_success.append(clamp(to_float(level.get("success"), 0.0), 0.0, 1.0))
+        costs_per_attempt.append(max(0.0, to_float(level.get("cost"), 0.0)))
+
+        s, d, _ = normalize_fail_probs(level)
+        stay_threshold.append(s)
+        down_threshold.append(s + d)
+
+        down_levels.append(max(0, lv - 1))
+        break_to = to_int(level.get("break_to"), 0)
+        break_levels.append(max(0, min(target_level, break_to)))
+        break_costs.append(max(0.0, to_float(level.get("break_cost"), 0.0)))
+
+    rand = random.random
+    append_attempt = attempts_list.append
+    append_cost = costs_list.append
+
     for _ in range(trials):
         lv = start_level
         attempts = 0
         cost = 0.0
         while lv < target_level and attempts < max_attempts_per_trial:
             attempts += 1
-            level = levels[lv]
-            p = clamp(to_float(level.get("success"), 0.0), 0.0, 1.0)
-            cost += max(0.0, to_float(level.get("cost"), 0.0))
+            idx = lv
+            cost += costs_per_attempt[idx]
 
-            if random.random() < p:
-                lv += 1
+            if rand() < probs_success[idx]:
+                lv = idx + 1
                 continue
 
-            s, d, b = normalize_fail_probs(level)
-            r = random.random()
-            if r < s:
-                pass
-            elif r < s + d:
-                lv = max(0, lv - 1)
-            else:
-                cost += max(0.0, to_float(level.get("break_cost"), 0.0))
-                lv = max(0, min(target_level, to_int(level.get("break_to"), 0)))
+            r = rand()
+            if r < stay_threshold[idx]:
+                continue
+            if r < down_threshold[idx]:
+                lv = down_levels[idx]
+                continue
+
+            cost += break_costs[idx]
+            lv = break_levels[idx]
 
         if lv < target_level:
             truncated += 1
-        attempts_list.append(float(attempts))
-        costs_list.append(cost)
+        append_attempt(float(attempts))
+        append_cost(cost)
 
     mean_attempts = sum(attempts_list) / max(len(attempts_list), 1)
     mean_cost = sum(costs_list) / max(len(costs_list), 1)
