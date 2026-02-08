@@ -41,11 +41,14 @@ game-balance-designer-plugin/
 ├── skills/
 │   └── game-balance-math/
 │       ├── SKILL.md
+│       ├── routing/
+│       │   └── reference-routing.json
 │       ├── scripts/
 │       │   ├── ttk_ehp_calculator.py
 │       │   ├── economy_flow_simulator.py
 │       │   ├── enhancement_cost_simulator.py
-│       │   └── clear_probability_tuner.py
+│       │   ├── clear_probability_tuner.py
+│       │   └── sync_reference_routing.py
 │       └── references/
 │           ├── experience-tables.md
 │           ├── intent-curve-one-pager.md
@@ -121,6 +124,14 @@ game-balance-designer-plugin/
 - `python3 skills/game-balance-math/scripts/clear_probability_tuner.py`
 
 입력 JSON을 쓰려면 각 스크립트에 `--input <json>`을 추가하세요. 입력이 없으면 내장 샘플로 실행됩니다.
+
+### 라우팅 맵 단일 소스
+
+에이전트/스킬의 요청-문서 라우팅 표는 아래 단일 소스를 기준으로 동기화합니다.
+
+- 소스: `skills/game-balance-math/routing/reference-routing.json`
+- 동기화: `python3 skills/game-balance-math/scripts/sync_reference_routing.py`
+- 드리프트 체크: `python3 skills/game-balance-math/scripts/sync_reference_routing.py --check`
 
 ### 골든 프롬프트
 

@@ -215,23 +215,26 @@ int WeightedRandom(int[] weights) {
 - 불확실하면 1~2개의 질문으로 전제를 확인하거나, 가정을 명시하고 진행한다.
 
 아래 표는 참고 상황과 내용을 함께 요약한다.
+아래 표는 `routing/reference-routing.json` 단일 소스에서 생성되며, 수동 수정하지 않는다.
 
 ### 요청-문서 빠른 라우팅
 
+<!-- ROUTING_TABLE_START:skill -->
 | 요청 신호(의도) | 먼저 볼 문서 | 핵심 산출 |
 |---|---|---|
-| "레벨업이 느리다/빠르다", "경험치 테이블 설계" | `experience-tables.md` | 레벨 구간별 XP 곡선/레벨업 시간 |
-| "빠르게 추천해줘", "요약표로 먼저 알려줘" | `intent-curve-one-pager.md` | 의도-모델-리스크-지표를 1페이지로 제시 |
-| "어떤 느낌을 주고 싶다", "선형/지수/계단식 추천" | `growth-intent-curve-playbook.md` | 체감 의도 기반 모델 추천 + 리스크/검증 지표 |
-| "재미를 수치로 어떻게 봐야 하지?", "모호한 재미를 검증하고 싶다" | `fun-quant-thinking.md` | 재미를 가설/관찰 신호/실패 조건으로 변환 |
-| "드랍률 이상함", "희귀도 확률 조정" | `drop-tables.md` | 가중치/희귀도/조건부 드롭 구조 |
-| "쿨감/공속/방어 효율 이상" | `diminishing-returns.md` | 수확 체감 공식과 k값 |
-| "가챠/강화 실패 체감이 나쁨" | `pity-systems.md` | pity/천장/중복보호 구조 |
-| "장르 템포에 맞는 곡선을 고르고 싶다" | `curve-genre-tempo.md` | 장르-템포별 모델 후보 |
-| "전투가 길다/짧다", "보스 체력 역산" | `combat-ttk-ehp.md` | DPS/EHP/TTK 기반 체력 산정 |
-| "스테이지 클리어율 목표 설정" | `encounter-clear-probability.md` | 목표 클리어율/재시도 횟수 |
-| "재화 인플레/디플레 점검" | `economy-faucet-sink.md` | Faucet-Sink/TTE/패치 충격 |
-| "강화 기대비용 계산", "보호권 가치" | `enhancement-expected-cost.md` | 평균/p90/p95 소모량 |
+| 경험치, 레벨업 속도, 성장 곡선 | `experience-tables.md` | 레벨 구간별 XP 곡선/레벨업 시간 |
+| 빠르게 추천해줘, 요약표로 먼저 알려줘 | `intent-curve-one-pager.md` | 의도-모델-리스크-지표를 1페이지로 제시 |
+| 어떤 느낌을 주고 싶다, 선형/지수/계단식 추천 | `growth-intent-curve-playbook.md` | 체감 의도 기반 모델 추천 + 리스크/검증 지표 |
+| 재미를 수치로 보고 싶다, 체감이 모호하다 | `fun-quant-thinking.md` | 재미를 가설/관찰 신호/실패 조건으로 변환 |
+| 드랍률, 희귀도, 파밍 효율 | `drop-tables.md` | 가중치/희귀도/조건부 드롭 구조 |
+| 쿨감, 공속, 방어력 효율, 소프트캡 | `diminishing-returns.md` | 수확 체감 공식과 k값 |
+| 가챠, 천장, 중복 보호, 실패 누적 | `pity-systems.md` | pity/천장/중복보호 구조 |
+| 장르 템포에 맞는 곡선을 고르고 싶다 | `curve-genre-tempo.md` | 장르-템포별 모델 후보 |
+| 전투가 길다/짧다, 보스 체력, 페이즈 시간 | `combat-ttk-ehp.md` | DPS/EHP/TTK 기반 체력 산정 |
+| 스테이지 난이도, 클리어율, 재시도 횟수 | `encounter-clear-probability.md` | 목표 클리어율/재시도 횟수 |
+| 인플레/디플레, 재화 수지, TTE | `economy-faucet-sink.md` | Faucet-Sink/TTE/패치 충격 |
+| 강화 기대비용, 파괴 리스크, 보호권 가치 | `enhancement-expected-cost.md` | 평균/p90/p95 소모량 |
+<!-- ROUTING_TABLE_END:skill -->
 
 | 파일 | 참고 상황 | 내용 |
 |------|----------|------|

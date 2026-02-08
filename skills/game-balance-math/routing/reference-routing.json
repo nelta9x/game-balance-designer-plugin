@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "description": "Single source of truth for request-to-reference routing used by agent/skill docs.",
+  "entries": [
+    {
+      "signal": "경험치, 레벨업 속도, 성장 곡선",
+      "primary": "experience-tables.md",
+      "secondary": "curve-genre-tempo.md",
+      "output": "레벨 구간별 XP 곡선/레벨업 시간"
+    },
+    {
+      "signal": "빠르게 추천해줘, 요약표로 먼저 알려줘",
+      "primary": "intent-curve-one-pager.md",
+      "secondary": "growth-intent-curve-playbook.md",
+      "output": "의도-모델-리스크-지표를 1페이지로 제시"
+    },
+    {
+      "signal": "어떤 느낌을 주고 싶다, 선형/지수/계단식 추천",
+      "primary": "growth-intent-curve-playbook.md",
+      "secondary": "curve-genre-tempo.md",
+      "output": "체감 의도 기반 모델 추천 + 리스크/검증 지표"
+    },
+    {
+      "signal": "재미를 수치로 보고 싶다, 체감이 모호하다",
+      "primary": "fun-quant-thinking.md",
+      "secondary": "growth-intent-curve-playbook.md",
+      "output": "재미를 가설/관찰 신호/실패 조건으로 변환"
+    },
+    {
+      "signal": "드랍률, 희귀도, 파밍 효율",
+      "primary": "drop-tables.md",
+      "secondary": "economy-faucet-sink.md",
+      "output": "가중치/희귀도/조건부 드롭 구조"
+    },
+    {
+      "signal": "쿨감, 공속, 방어력 효율, 소프트캡",
+      "primary": "diminishing-returns.md",
+      "secondary": "combat-ttk-ehp.md",
+      "output": "수확 체감 공식과 k값"
+    },
+    {
+      "signal": "가챠, 천장, 중복 보호, 실패 누적",
+      "primary": "pity-systems.md",
+      "secondary": "enhancement-expected-cost.md",
+      "output": "pity/천장/중복보호 구조"
+    },
+    {
+      "signal": "장르 템포에 맞는 곡선을 고르고 싶다",
+      "primary": "curve-genre-tempo.md",
+      "secondary": "experience-tables.md",
+      "output": "장르-템포별 모델 후보"
+    },
+    {
+      "signal": "전투가 길다/짧다, 보스 체력, 페이즈 시간",
+      "primary": "combat-ttk-ehp.md",
+      "secondary": "encounter-clear-probability.md",
+      "output": "DPS/EHP/TTK 기반 체력 산정"
+    },
+    {
+      "signal": "스테이지 난이도, 클리어율, 재시도 횟수",
+      "primary": "encounter-clear-probability.md",
+      "secondary": "combat-ttk-ehp.md",
+      "output": "목표 클리어율/재시도 횟수"
+    },
+    {
+      "signal": "인플레/디플레, 재화 수지, TTE",
+      "primary": "economy-faucet-sink.md",
+      "secondary": "drop-tables.md",
+      "output": "Faucet-Sink/TTE/패치 충격"
+    },
+    {
+      "signal": "강화 기대비용, 파괴 리스크, 보호권 가치",
+      "primary": "enhancement-expected-cost.md",
+      "secondary": "pity-systems.md",
+      "output": "평균/p90/p95 소모량"
+    }
+  ]
+}

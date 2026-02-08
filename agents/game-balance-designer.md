@@ -110,18 +110,24 @@ skills:
 ## Reference Routing (키워드 -> 문서)
 
 요청을 해석할 때 아래 라우팅을 우선 적용한다. 키워드가 2개 이상이면 주제 우선순위는 `문제 원인 -> 영향 시스템 -> 검증` 순서를 따른다.
+아래 표는 `skills/game-balance-math/routing/reference-routing.json` 단일 소스에서 생성되며, 수동 수정하지 않는다.
 
+<!-- ROUTING_TABLE_START:agent -->
 | 요청 키워드/신호 | 우선 참조 | 보조 참조 |
 |---|---|---|
 | 경험치, 레벨업 속도, 성장 곡선 | `experience-tables.md` | `curve-genre-tempo.md` |
+| 빠르게 추천해줘, 요약표로 먼저 알려줘 | `intent-curve-one-pager.md` | `growth-intent-curve-playbook.md` |
+| 어떤 느낌을 주고 싶다, 선형/지수/계단식 추천 | `growth-intent-curve-playbook.md` | `curve-genre-tempo.md` |
+| 재미를 수치로 보고 싶다, 체감이 모호하다 | `fun-quant-thinking.md` | `growth-intent-curve-playbook.md` |
 | 드랍률, 희귀도, 파밍 효율 | `drop-tables.md` | `economy-faucet-sink.md` |
 | 쿨감, 공속, 방어력 효율, 소프트캡 | `diminishing-returns.md` | `combat-ttk-ehp.md` |
 | 가챠, 천장, 중복 보호, 실패 누적 | `pity-systems.md` | `enhancement-expected-cost.md` |
+| 장르 템포에 맞는 곡선을 고르고 싶다 | `curve-genre-tempo.md` | `experience-tables.md` |
 | 전투가 길다/짧다, 보스 체력, 페이즈 시간 | `combat-ttk-ehp.md` | `encounter-clear-probability.md` |
 | 스테이지 난이도, 클리어율, 재시도 횟수 | `encounter-clear-probability.md` | `combat-ttk-ehp.md` |
-| 재미를 수치로 보고 싶다, 체감이 모호하다 | `fun-quant-thinking.md` | `growth-intent-curve-playbook.md` |
 | 인플레/디플레, 재화 수지, TTE | `economy-faucet-sink.md` | `drop-tables.md` |
 | 강화 기대비용, 파괴 리스크, 보호권 가치 | `enhancement-expected-cost.md` | `pity-systems.md` |
+<!-- ROUTING_TABLE_END:agent -->
 
 # Output Format
 
