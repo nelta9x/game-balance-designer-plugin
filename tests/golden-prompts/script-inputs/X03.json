@@ -1,0 +1,10 @@
+{
+  "days": 14,
+  "initial_stock": 0,
+  "price": 28000,
+  "scenarios": [
+    {"name": "Base", "faucet": 3000, "sink": 1727, "mandatory_sink": 1727},
+    {"name": "Event+30%", "faucet": 3900, "sink": 1727, "mandatory_sink": 1727},
+    {"name": "Event+30%+Buffer", "faucet": 3900, "sink": 2380, "mandatory_sink": 2380}
+  ]
+}

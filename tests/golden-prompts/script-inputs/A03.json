@@ -1,0 +1,10 @@
+{
+  "days": 1,
+  "initial_stock": 0,
+  "price": 1,
+  "scenarios": [
+    {"name": "신규 코호트", "faucet": 900, "sink": 760, "mandatory_sink": 760},
+    {"name": "중간 코호트", "faucet": 1500, "sink": 1180, "mandatory_sink": 1180},
+    {"name": "엔드 코호트", "faucet": 3000, "sink": 2100, "mandatory_sink": 2100}
+  ]
+}

@@ -85,7 +85,28 @@
         "EHP",
         "스파이크"
       ],
-      "preferred_script": "ttk_ehp_calculator.py"
+      "preferred_script": "ttk_ehp_calculator.py",
+      "script_validation": {
+        "input": "script-inputs/A02.json",
+        "extract": [
+          {
+            "name": "stage10_ttk",
+            "path": "rows.2.ttk",
+            "atol": 0.5
+          },
+          {
+            "name": "stage11_ttk",
+            "path": "rows.3.ttk",
+            "atol": 0.5
+          },
+          {
+            "name": "stage10_ehp",
+            "path": "rows.2.ehp",
+            "atol": 300
+          }
+        ],
+        "min_matches": 2
+      }
     },
     {
       "id": "A03",
@@ -102,7 +123,33 @@
         "TTE",
         "코호트"
       ],
-      "preferred_script": "economy_flow_simulator.py"
+      "preferred_script": "economy_flow_simulator.py",
+      "script_validation": {
+        "input": "script-inputs/A03.json",
+        "extract": [
+          {
+            "name": "new_cohort_fs",
+            "path": "results.0.f_over_s",
+            "atol": 0.02
+          },
+          {
+            "name": "mid_cohort_fs",
+            "path": "results.1.f_over_s",
+            "atol": 0.02
+          },
+          {
+            "name": "end_cohort_fs",
+            "path": "results.2.f_over_s",
+            "atol": 0.02
+          },
+          {
+            "name": "end_cohort_avg_net",
+            "path": "results.2.avg_net",
+            "atol": 10
+          }
+        ],
+        "min_matches": 3
+      }
     },
     {
       "id": "A04",
@@ -136,7 +183,33 @@
         "p90",
         "p95"
       ],
-      "preferred_script": "enhancement_cost_simulator.py"
+      "preferred_script": "enhancement_cost_simulator.py",
+      "script_validation": {
+        "input": "script-inputs/A05.json",
+        "extract": [
+          {
+            "name": "expected_cost_from_start",
+            "path": "expected.from_start.cost",
+            "atol": 1500
+          },
+          {
+            "name": "sim_cost_p90",
+            "path": "simulation.cost.p90",
+            "atol": 3000
+          },
+          {
+            "name": "sim_cost_p95",
+            "path": "simulation.cost.p95",
+            "atol": 3500
+          },
+          {
+            "name": "sim_attempts_p90",
+            "path": "simulation.attempts.p90",
+            "atol": 5
+          }
+        ],
+        "min_matches": 3
+      }
     },
     {
       "id": "A06",
@@ -564,6 +637,177 @@
         "억까"
       ],
       "preferred_script": null
+    },
+    {
+      "id": "X03",
+      "category": "cross-system",
+      "title": "복귀 이벤트 데이터 불완전 리스크 분석",
+      "expected_template": "analysis_default",
+      "prompt": "복귀 유저 이벤트(14일)를 준비 중이야.\n목표는 복귀율 +5%p인데, 기존 유저 인플레는 최소화해야 해.\n\n현재 가진 데이터:\n- 복귀 코호트 첫 시도 클리어율: 47%\n- 신규 코호트 첫 시도 클리어율: 63%\n- 엔드 코호트 핵심 재료 TTE: 22일\n- 이벤트 보상안: 일일 재화 +30%\n\n누락 데이터:\n- 코호트별 Sink 상세\n- 이벤트 기간 중 실제 재화 소모 변화\n\n누락 정보를 가정으로 보완해서 위험 포인트와 완충 레버를 분석해줘.",
+      "required_references": [
+        "economy-faucet-sink.md",
+        "encounter-clear-probability.md",
+        "fun-quant-thinking.md"
+      ],
+      "required_keywords": [
+        "누락 데이터",
+        "위험 포인트",
+        "완충 레버"
+      ],
+      "preferred_script": "economy_flow_simulator.py",
+      "script_validation": {
+        "input": "script-inputs/X03.json",
+        "extract": [
+          {
+            "name": "base_tte",
+            "path": "results.0.tte_days",
+            "atol": 0.5
+          },
+          {
+            "name": "event_tte",
+            "path": "results.1.tte_days",
+            "atol": 0.5
+          },
+          {
+            "name": "buffer_tte",
+            "path": "results.2.tte_days",
+            "atol": 0.5
+          },
+          {
+            "name": "event_fs",
+            "path": "results.1.f_over_s",
+            "atol": 0.03
+          }
+        ],
+        "min_matches": 3
+      }
+    },
+    {
+      "id": "X04",
+      "category": "cross-system",
+      "title": "상충 KPI 동시 제어 설계",
+      "expected_template": "design_default",
+      "prompt": "다음 시즌 전투 체감을 강화하려고 해.\n요구사항은 서로 상충돼:\n- 일반몹 TTK 25% 단축\n- 메인 챕터 첫 시도 클리어율 60~70% 유지\n- 핵심 재료 TTE 30~35일 유지\n\n성장-전투-경제를 함께 보고 우선순위를 명시한 동시 제어 설계안을 제시해줘.",
+      "required_references": [
+        "combat-ttk-ehp.md",
+        "encounter-clear-probability.md",
+        "economy-faucet-sink.md"
+      ],
+      "required_keywords": [
+        "상충",
+        "우선순위",
+        "동시 제어"
+      ],
+      "preferred_script": "clear_probability_tuner.py",
+      "script_validation": {
+        "input": "script-inputs/X04.json",
+        "extract": [
+          {
+            "name": "required_gap_60",
+            "path": "target_rows.0.required_power_gap",
+            "atol": 0.02
+          },
+          {
+            "name": "required_gap_65",
+            "path": "target_rows.1.required_power_gap",
+            "atol": 0.02
+          },
+          {
+            "name": "required_gap_70",
+            "path": "target_rows.2.required_power_gap",
+            "atol": 0.02
+          },
+          {
+            "name": "pg_minus_01_p90",
+            "path": "simulation.per_power_gap.0.attempts.p90",
+            "atol": 0.6
+          }
+        ],
+        "min_matches": 3
+      }
+    },
+    {
+      "id": "X05",
+      "category": "cross-system",
+      "title": "양극화 피드백 패치 대응",
+      "expected_template": "troubleshooting_default",
+      "prompt": "패치 이후 피드백이 양극화됐어.\n- \"손맛 좋아졌다\"\n- \"중반이 더 답답해졌다\"\n\n관측 지표:\n- 평균 TTK: -18%\n- p90 재시도: 4 -> 7\n- 핵심 재료 TTE: 26일 -> 19일\n\n원인을 정리하고 수정안 A/B와 권장안을 제시해줘.",
+      "required_references": [
+        "combat-ttk-ehp.md",
+        "fun-quant-thinking.md",
+        "economy-faucet-sink.md"
+      ],
+      "required_keywords": [
+        "양극화",
+        "A/B",
+        "권장안"
+      ],
+      "preferred_script": "clear_probability_tuner.py",
+      "script_validation": {
+        "input": "script-inputs/X05.json",
+        "extract": [
+          {
+            "name": "before_clear_prob",
+            "path": "clear_curve.0.clear_prob",
+            "atol": 0.02
+          },
+          {
+            "name": "after_clear_prob",
+            "path": "clear_curve.1.clear_prob",
+            "atol": 0.02
+          },
+          {
+            "name": "before_p90_attempts",
+            "path": "simulation.per_power_gap.0.attempts.p90",
+            "atol": 0.6
+          },
+          {
+            "name": "after_p90_attempts",
+            "path": "simulation.per_power_gap.1.attempts.p90",
+            "atol": 0.6
+          }
+        ],
+        "min_matches": 3
+      }
+    },
+    {
+      "id": "X06",
+      "category": "cross-system",
+      "title": "지표 부족 상황 통합 설계",
+      "expected_template": "design_default",
+      "prompt": "다음 분기 목표는 아래 3개야.\n- 중반 지루함 완화\n- 후반 장기 목표 유지\n- 인플레 억제\n\n하지만 현재 데이터는 챕터 4~6 이탈률 +2.8%p뿐이야.\n부족한 정보를 가정으로 보완하고, 성장/전투/경제 통합 설계안을 제시해줘.",
+      "required_references": [
+        "growth-intent-curve-playbook.md",
+        "combat-ttk-ehp.md",
+        "economy-faucet-sink.md"
+      ],
+      "required_keywords": [
+        "가정",
+        "통합 설계",
+        "검증 지표"
+      ],
+      "preferred_script": "economy_flow_simulator.py",
+      "script_validation": {
+        "input": "script-inputs/X06.json",
+        "extract": [
+          {
+            "name": "baseline_tte",
+            "path": "results.0.tte_days",
+            "atol": 0.5
+          },
+          {
+            "name": "integrated_tte",
+            "path": "results.1.tte_days",
+            "atol": 0.5
+          },
+          {
+            "name": "integrated_fs",
+            "path": "results.1.f_over_s",
+            "atol": 0.03
+          }
+        ],
+        "min_matches": 2
+      }
     }
   ]
 }

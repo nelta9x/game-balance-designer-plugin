@@ -1,0 +1,16 @@
+{
+  "beta": {"b0": -0.2, "b1": 2.0, "b2": 0.8, "b3": 0.35},
+  "mechanic_score": 0.45,
+  "retry_bonus": 0.0,
+  "power_gaps": [-0.12, 0.05],
+  "target_clear_probs": [0.50, 0.60],
+  "attempt_probs": [0.42, 0.55],
+  "simulation": {
+    "enabled": true,
+    "retry_bonus_step": 0.10,
+    "retry_bonus_cap": 0.40,
+    "max_attempts": 10,
+    "trials": 20000,
+    "seed": 42
+  }
+}

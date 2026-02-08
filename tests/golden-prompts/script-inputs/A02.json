@@ -1,0 +1,8 @@
+{
+  "rows": [
+    {"name": "Stage 8", "dps": 1400, "hp": 18000, "mitigation": 0.20},
+    {"name": "Stage 9", "dps": 1500, "hp": 21000, "mitigation": 0.22},
+    {"name": "Stage 10", "dps": 1600, "hp": 38000, "mitigation": 0.30},
+    {"name": "Stage 11", "dps": 1700, "hp": 42000, "mitigation": 0.32}
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "days": 30,
+  "initial_stock": 0,
+  "price": 32000,
+  "scenarios": [
+    {"name": "Baseline", "faucet": 2600, "sink": 1600, "mandatory_sink": 1600},
+    {"name": "IntegratedPatch", "faucet": 2808, "sink": 1920, "mandatory_sink": 1920}
+  ]
+}

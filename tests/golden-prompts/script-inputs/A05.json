@@ -1,0 +1,16 @@
+{
+  "start_level": 0,
+  "target_level": 8,
+  "levels": [
+    {"success": 1.0, "cost": 100, "fail": {"stay": 1.0, "down": 0.0, "break": 0.0}},
+    {"success": 0.9, "cost": 200, "fail": {"stay": 1.0, "down": 0.0, "break": 0.0}},
+    {"success": 0.8, "cost": 350, "fail": {"stay": 1.0, "down": 0.0, "break": 0.0}},
+    {"success": 0.6, "cost": 500, "fail": {"stay": 0.7, "down": 0.3, "break": 0.0}},
+    {"success": 0.45, "cost": 800, "fail": {"stay": 0.7, "down": 0.3, "break": 0.0}},
+    {"success": 0.35, "cost": 1200, "fail": {"stay": 0.7, "down": 0.3, "break": 0.0}},
+    {"success": 0.25, "cost": 1800, "fail": {"stay": 0.7, "down": 0.3, "break": 0.0}},
+    {"success": 0.2, "cost": 2500, "fail": {"stay": 0.6, "down": 0.3, "break": 0.1}, "break_to": 0}
+  ],
+  "trials": 200000,
+  "seed": 42
+}

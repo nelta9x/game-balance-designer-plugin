@@ -40,6 +40,8 @@ SAMPLE_EXTENSIONS = (".md", ".markdown", ".txt")
 SECTION_RE = re.compile(r"(?m)^\s*##\s+(.+?)\s*$")
 TABLE_SEP_RE = re.compile(r"^\s*\|?\s*:?-{3,}")
 LIST_ROW_RE = re.compile(r"^\s*(?:[-*]|\d+\.)\s+")
+NUMBER_RE = re.compile(r"[-+]?(?:\d+\.\d+|\d+|\.\d+)(?:[eE][-+]?\d+)?")
+NUMERIC_COMMA_RE = re.compile(r"(?<=\d),(?=\d)")
 
 
 def _now_utc_iso() -> str:
@@ -58,6 +60,142 @@ def _safe_ratio(numerator: int, denominator: int) -> float:
 
 def _contains_any(text: str, needles: Sequence[str]) -> bool:
     return any(needle.lower() in text.lower() for needle in needles)
+
+
+def _to_int(value: Any, default: int) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _to_float(value: Any, default: float) -> float:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _extract_numbers(text: str) -> List[float]:
+    normalized = NUMERIC_COMMA_RE.sub("", text)
+    out: List[float] = []
+    for match in NUMBER_RE.finditer(normalized):
+        try:
+            out.append(float(match.group(0)))
+        except (TypeError, ValueError):
+            continue
+    return out
+
+
+def _value_at_path(payload: Any, path: str) -> Any:
+    current = payload
+    for raw_token in path.split("."):
+        token = raw_token.strip()
+        if not token:
+            continue
+
+        if isinstance(current, dict):
+            if token not in current:
+                raise KeyError(f"missing key '{token}' in path '{path}'")
+            current = current[token]
+            continue
+
+        if isinstance(current, list):
+            try:
+                idx = int(token)
+            except ValueError as exc:
+                raise KeyError(f"non-integer index '{token}' in path '{path}'") from exc
+            if idx < 0 or idx >= len(current):
+                raise IndexError(f"index out of range ({idx}) in path '{path}'")
+            current = current[idx]
+            continue
+
+        raise KeyError(f"cannot descend into scalar at token '{token}' for path '{path}'")
+
+    return current
+
+
+def evaluate_script_numeric_checks(
+    response: str,
+    preferred_script: str,
+    validation: Mapping[str, Any],
+    repo_root: Path,
+    suite_dir: Path,
+) -> Tuple[float, bool, str]:
+    script_path = repo_root / "skills" / "game-balance-math" / "scripts" / preferred_script
+    if not script_path.exists():
+        return 0.0, False, f"script_not_found: {script_path}"
+
+    input_rel = validation.get("input")
+    if not isinstance(input_rel, str) or not input_rel.strip():
+        return 0.0, False, "invalid_script_validation_input"
+    input_path = Path(input_rel)
+    if not input_path.is_absolute():
+        input_path = (suite_dir / input_path).resolve()
+    if not input_path.exists():
+        return 0.0, False, f"input_not_found: {input_path}"
+
+    extract_rules = validation.get("extract")
+    if not isinstance(extract_rules, list) or not extract_rules:
+        return 0.0, False, "invalid_script_validation_extract"
+
+    cmd = [sys.executable, str(script_path), "--input", str(input_path), "--format", "json"]
+    run = subprocess.run(cmd, capture_output=True, text=True, check=False, timeout=30)
+    if run.returncode != 0:
+        return 0.0, False, f"script_exit_{run.returncode}: {run.stderr.strip()}"
+
+    stdout = run.stdout.strip()
+    if not stdout:
+        return 0.0, False, "script_empty_stdout"
+
+    try:
+        payload = json.loads(stdout)
+    except json.JSONDecodeError as exc:
+        return 0.0, False, f"script_invalid_json: {exc}"
+
+    response_numbers = _extract_numbers(response)
+    if not response_numbers:
+        return 0.0, False, "no_numeric_values_in_response"
+
+    matched = 0
+    missing: List[str] = []
+    for idx, rule in enumerate(extract_rules, start=1):
+        if not isinstance(rule, dict):
+            missing.append(f"rule#{idx}:invalid_rule")
+            continue
+
+        path = rule.get("path") or rule.get("json_path")
+        if not isinstance(path, str) or not path.strip():
+            missing.append(f"rule#{idx}:missing_path")
+            continue
+
+        name = str(rule.get("name", path))
+        try:
+            expected = float(_value_at_path(payload, path))
+        except (KeyError, IndexError, TypeError, ValueError):
+            missing.append(f"{name}:path_error")
+            continue
+
+        atol = max(0.0, _to_float(rule.get("atol"), 0.0))
+        rtol = max(0.0, _to_float(rule.get("rtol"), 0.02))
+        tol = max(atol, abs(expected) * rtol)
+        hit = any(abs(value - expected) <= tol for value in response_numbers)
+        if hit:
+            matched += 1
+        else:
+            missing.append(f"{name}≈{expected:.4g}±{tol:.4g}")
+
+    total = len(extract_rules)
+    min_matches = max(0, _to_int(validation.get("min_matches"), total))
+    min_matches = min(min_matches, total)
+    score = _safe_ratio(matched, total)
+    passed = matched >= min_matches
+    details = f"matched {matched}/{total} (min {min_matches})"
+    if missing:
+        details += "; missing: " + ", ".join(missing[:6])
+        if len(missing) > 6:
+            details += " ..."
+    return score, passed, details
 
 
 def load_data(path: Path) -> Any:
@@ -99,6 +237,35 @@ def lint_suite(suite: Mapping[str, Any]) -> List[str]:
         for req_key in ("prompt", "required_references", "required_keywords"):
             if req_key not in case:
                 issues.append(f"case {case_id}: missing '{req_key}'")
+
+        preferred_script = case.get("preferred_script")
+        script_validation = case.get("script_validation")
+        if script_validation is not None:
+            if not preferred_script:
+                issues.append(f"case {case_id}: script_validation requires preferred_script")
+            if not isinstance(script_validation, dict):
+                issues.append(f"case {case_id}: script_validation must be an object")
+            else:
+                raw_input = script_validation.get("input")
+                if not isinstance(raw_input, str) or not raw_input.strip():
+                    issues.append(f"case {case_id}: script_validation.input must be a non-empty string")
+                extract = script_validation.get("extract")
+                if not isinstance(extract, list) or not extract:
+                    issues.append(f"case {case_id}: script_validation.extract must be a non-empty array")
+                else:
+                    for ridx, rule in enumerate(extract, start=1):
+                        if not isinstance(rule, dict):
+                            issues.append(f"case {case_id}: script_validation.extract[{ridx}] must be an object")
+                            continue
+                        has_path = (
+                            isinstance(rule.get("path"), str) and bool(str(rule.get("path")).strip())
+                        ) or (
+                            isinstance(rule.get("json_path"), str) and bool(str(rule.get("json_path")).strip())
+                        )
+                        if not has_path:
+                            issues.append(
+                                f"case {case_id}: script_validation.extract[{ridx}] requires path or json_path"
+                            )
 
     return issues
 
@@ -243,6 +410,8 @@ def score_case(
     response: Optional[str],
     min_case_score: float,
     allow_missing_cases: bool,
+    repo_root: Path,
+    suite_dir: Path,
 ) -> Dict[str, Any]:
     case_id = str(case.get("id", "UNKNOWN"))
     title = str(case.get("title", ""))
@@ -275,6 +444,7 @@ def score_case(
     required_keywords = [str(x) for x in case.get("required_keywords", [])]
     required_refs = [str(x) for x in case.get("required_references", [])]
     preferred_script = case.get("preferred_script")
+    script_validation = case.get("script_validation")
 
     missing_sections = find_missing_sections(response, required_sections)
     sections_score = _safe_ratio(len(required_sections) - len(missing_sections), len(required_sections))
@@ -300,11 +470,20 @@ def score_case(
     script_details = "N/A"
     if preferred_script:
         preferred_script = str(preferred_script)
-        script_pass = preferred_script.lower() in response.lower()
-        script_score = 1.0 if script_pass else 0.0
-        script_details = (
-            f"mentioned {preferred_script}" if script_pass else f"missing mention: {preferred_script}"
-        )
+        if script_validation is not None and isinstance(script_validation, Mapping):
+            script_score, script_pass, script_details = evaluate_script_numeric_checks(
+                response=response,
+                preferred_script=preferred_script,
+                validation=script_validation,
+                repo_root=repo_root,
+                suite_dir=suite_dir,
+            )
+        else:
+            script_pass = preferred_script.lower() in response.lower()
+            script_score = 1.0 if script_pass else 0.0
+            script_details = (
+                f"mentioned {preferred_script}" if script_pass else f"missing mention: {preferred_script}"
+            )
 
     metric_scores = {
         "sections": sections_score,
@@ -329,6 +508,8 @@ def score_case(
         hard_fail_reasons.append("missing_required_sections")
     if not assumptions_pass:
         hard_fail_reasons.append("assumptions_out_of_range")
+    if preferred_script and script_validation is not None and not bool(script_pass):
+        hard_fail_reasons.append("preferred_script_numeric_mismatch")
 
     passed = score >= min_case_score and len(hard_fail_reasons) == 0
 
@@ -365,9 +546,10 @@ def score_case(
         },
     ]
     if script_score is not None:
+        script_check_name = "preferred_script_numeric" if script_validation is not None else "preferred_script"
         checks.append(
             {
-                "name": "preferred_script",
+                "name": script_check_name,
                 "score": round(script_score, 4),
                 "passed": bool(script_pass),
                 "details": script_details,
@@ -596,6 +778,8 @@ def build_report(args: argparse.Namespace) -> Dict[str, Any]:
             response=response,
             min_case_score=args.min_case_score,
             allow_missing_cases=args.allow_missing_cases,
+            repo_root=suite_path.parents[2],
+            suite_dir=suite_path.parent,
         )
         case_results.append(case_result)
 

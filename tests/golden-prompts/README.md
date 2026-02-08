@@ -6,7 +6,8 @@
 
 - `game-balance-designer-golden-prompts.json`
 - `run_golden_checks.py`
-- `sample-responses/` (`A01~A10.md`, `D01~D08.md`, `T01~T10.md`, `X01~X02.md`)
+- `script-inputs/` (케이스별 스크립트 기준 입력 JSON)
+- `sample-responses/` (`A01~A10.md`, `D01~D08.md`, `T01~T10.md`, `X01~X06.md`)
 - `README.md`
 
 ## 자동 실행/채점
@@ -28,7 +29,7 @@ python3 tests/golden-prompts/run_golden_checks.py \
   --case-ids A01,A02,A07,A08,A09,A10,D01,D02,D07,D08,T01,T02,T07,T08,T09,T10,X01,X02
 ```
 
-`sample-responses/`는 기본적으로 전체 30개 케이스(`A01~A10,D01~D08,T01~T10,X01~X02`)를 포함한다.
+`sample-responses/`는 기본적으로 전체 34개 케이스(`A01~A10,D01~D08,T01~T10,X01~X06`)를 포함한다.
 
 지원 포맷:
 - `--responses-dir`: `A01.md`, `A02.markdown`, `A03.txt` 파일 묶음
@@ -82,4 +83,7 @@ python3 tests/golden-prompts/run_golden_checks.py \
 - 키워드: `cases[].required_keywords` 충족 여부
 - 참조: `cases[].required_references` 언급 여부
 - trait: 템플릿별 품질 조건 충족 여부
-- 스크립트: `--check-scripts` 사용 시 `preferred_script` 실행 가능 여부
+- 스크립트:
+  - `script_validation`이 있는 케이스는 응답 수치가 `preferred_script` 기준값(허용 오차)과 일치하는지 검사
+  - `script_validation`이 없는 케이스는 기존처럼 `preferred_script` 언급 여부 검사
+  - `--check-scripts` 사용 시에는 별도로 `preferred_script` 실행 가능 여부도 점검
